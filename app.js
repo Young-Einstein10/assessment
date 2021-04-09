@@ -12,6 +12,9 @@ const root = {
   shortenUrl: shortenUrlResolvers,
 };
 
+// Create Database Table
+createUrlTable();
+
 app.use(
   express.json({
     extended: false,
@@ -24,7 +27,6 @@ app.use(
     schema: schema,
     rootValue: root,
     graphiql: true,
-    // context: { req },
     customFormatErrorFn: (error) => ({
       message: error.message,
       locations: error.locations,
@@ -34,15 +36,12 @@ app.use(
   })
 );
 
+app.get("/", (req, res) => res.send("GraphQL Server Running"));
+
 app.use(routes);
 
 app.use("/*", (req, res) => {
   res.status(404).send("Not Found");
 });
 
-const PORT = process.env.PORT || 5000;
-
-createUrlTable();
-
-// Listen for incoming requests
-app.listen(PORT, () => console.log(`Server Running on PORT ${PORT}`));
+module.exports = app;

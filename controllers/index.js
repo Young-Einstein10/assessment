@@ -1,4 +1,3 @@
-const validUrl = require("valid-url");
 const { db } = require("../models");
 
 const redirectController = async (req, res) => {

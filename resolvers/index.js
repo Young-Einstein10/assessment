@@ -1,18 +1,18 @@
 const validUrl = require("valid-url");
 const { nanoid } = require("nanoid");
 const { db } = require("../models");
-const getUrlByCode = require("./getUrlByCode");
+const { getFullUrl } = require("../utils");
 
 const shortenUrlResolvers = async ({ url }, req) => {
-  let longUrl = url;
+  let originalUrl = url;
   // The API Base URL
-  const baseUrl = req.headers.origin;
+  const baseUrl = getFullUrl(req);
 
   // Validate API Base URL
-  if (!validUrl.isUri(baseUrl)) throw new Error("Invalid base URL");
+  if (!validUrl.isUri(baseUrl)) throw new Error("Invalid Base URL");
 
   // Validate Incoming URL
-  if (!validUrl.isUri(longUrl)) throw new Error("Invalid URL");
+  if (!validUrl.isUri(originalUrl)) throw new Error("Invalid URL");
 
   try {
     //  Check If URL is in database else create it
@@ -21,7 +21,7 @@ const shortenUrlResolvers = async ({ url }, req) => {
     // if valid, we create the url code
     const urlCode = nanoid(6);
 
-    const { rows } = await db.query(queryText, [longUrl]);
+    const { rows } = await db.query(queryText, [originalUrl]);
 
     // if url exist, return the shortened url
     if (rows.length) {
@@ -29,11 +29,12 @@ const shortenUrlResolvers = async ({ url }, req) => {
         shortened_url: rows[0].shortened_url,
       };
     } else {
-      // join the generated short code the the base url
+      // join the generated short code to the base url
       const shortUrl = `${baseUrl}/${urlCode}`;
 
       const query = `INSERT INTO urls(id, original_url, shortened_url, created_on) VALUES($1, $2, $3, $4) returning *`;
-      const values = [urlCode, longUrl, shortUrl, new Date()];
+
+      const values = [urlCode, originalUrl, shortUrl, new Date()];
 
       const { rows } = await db.query(query, values);
 
