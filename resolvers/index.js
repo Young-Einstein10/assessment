@@ -11,7 +11,7 @@ const shortenUrlResolvers = async ({ url }, req) => {
   // Validate API Base URL
   if (!validUrl.isUri(baseUrl)) throw new Error("Invalid Base URL");
 
-  // Validate Incoming URL
+  // Validate Incoming URL\
   if (!validUrl.isUri(originalUrl)) throw new Error("Invalid URL");
 
   try {
