@@ -6,7 +6,9 @@ const getUrlByCode = require("./getUrlByCode");
 const shortenUrlResolvers = async ({ url }, req) => {
   let longUrl = url;
   // The API Base URL
-  const baseUrl = req.headers.origin || "http://localhost:5000";
+  const baseUrl = req.headers.origin;
+
+  console.log(req.headers);
 
   // Validate API Base URL
   if (!validUrl.isUri(baseUrl)) throw new Error("Invalid base URL");
